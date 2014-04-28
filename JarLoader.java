@@ -23,7 +23,7 @@ public class JarLoader {
 	 * name of the class to execute
 	 */
 	final String CLASS_NAME = "ClassName";
-	
+
 	/**
 	 * file type to filter for in directory
 	 */
@@ -45,21 +45,23 @@ public class JarLoader {
 	 * all preloaded classes
 	 */
 	private List<Class> classes = new ArrayList<Class>();
-	
+
 	/**
 	 * given directory
 	 */
 	private String directory;
-	
+
 	/**
 	 * load all jars from directory
+	 * 
 	 * @param directory
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public JarLoader(String directory) throws ClassNotFoundException, IOException {
+	public JarLoader(String directory) throws ClassNotFoundException,
+			IOException {
 		this.directory = directory;
-		
+
 		// get all files from path
 		File folder = new File(directory);
 		File[] listOfFiles = folder.listFiles();
@@ -75,7 +77,7 @@ public class JarLoader {
 		}
 
 		this.loadAll();
-		
+
 	}
 
 	/**
@@ -122,15 +124,17 @@ public class JarLoader {
 		 */
 		int index;
 		try {
-			if(!filename.substring(filename.length() - FILE_TYPE.length()).equals(FILE_TYPE))
-				filename += FILE_TYPE;			
-			
-			index = urlList.indexOf(new File(directory+filename).toURI().toURL());
+			if (!filename.substring(filename.length() - FILE_TYPE.length())
+					.equals(FILE_TYPE))
+				filename += FILE_TYPE;
+
+			index = urlList.indexOf(new File(directory + filename).toURI()
+					.toURL());
 			execute(index);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	/**
@@ -195,7 +199,8 @@ public class JarLoader {
 
 			URLClassLoader child = new URLClassLoader(urlCast,
 					JarLoader.class.getClassLoader());
-			Class classToLoad = Class.forName(PACKAGE_STRUCTURE + "." + CLASS_NAME, true, child);
+			Class classToLoad = Class.forName(PACKAGE_STRUCTURE + "."
+					+ CLASS_NAME, true, child);
 
 			classes.add(classToLoad);
 
@@ -205,10 +210,41 @@ public class JarLoader {
 
 		}
 	}
-	
+
+	/**
+	 * load one jar to project
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public void loadOne(File f) throws IOException, ClassNotFoundException {
+		URL url = f.toURI().toURL();
+
+		String file = url.toString();
+		URL[] urlCast = { url };
+
+		URLClassLoader sysloader = (URLClassLoader) ClassLoader
+				.getSystemClassLoader();
+		Class sysclass = URLClassLoader.class;
+
+		URLClassLoader child = new URLClassLoader(urlCast,
+				JarLoader.class.getClassLoader());
+		Class classToLoad = Class.forName(PACKAGE_STRUCTURE + "." + CLASS_NAME,
+				true, child);
+
+		classes.add(classToLoad);
+
+		// execute functions
+		// Method method = classToLoad.getDeclaredMethod ("myMethod");
+		// Object result = method.invoke (instance);
+
+	}
+
 	/**
 	 * get filetype (last "." and what follows) "bla.jpeg" => ".jpeg"
-	 * @param name name of file
+	 * 
+	 * @param name
+	 *            name of file
 	 * @return filetype
 	 */
 	private String getFileType(String name) {
